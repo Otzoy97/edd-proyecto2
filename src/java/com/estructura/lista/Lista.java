@@ -14,8 +14,10 @@ import java.util.Iterator;
  * @param <T> Tipo de dato a almacenar en la lista
  */
 public class Lista<T> implements Iterable<T> {
+
     /**
      * Nodo que compone la lista doblemente enlazada
+     *
      * @param <T>
      */
     class Nodo<T> {
@@ -29,6 +31,11 @@ public class Lista<T> implements Iterable<T> {
          */
         private T dato;
 
+        /**
+         * Constructor por defecto
+         *
+         * @param dato_
+         */
         Nodo(T dato_) {
             siguiente = null;
             anterior = null;
@@ -52,31 +59,39 @@ public class Lista<T> implements Iterable<T> {
             dato = dato_;
         }
     }
+
     /**
      * Iterador para la clase Lista
      */
     class ListaIterador implements Iterator<T> {
+
         /**
          * Apuntador al nodo actual :v
          */
         Nodo<T> actual;
+
         /**
          * Constructor por defecto
+         *
          * @param lista
          */
         public ListaIterador(Lista<T> lista) {
             actual = lista.primero;
         }
+
         /**
-         * 
-         * @return <code>true</code> si existe un nodo en la lista, de lo contrario <code>false</code>
+         *
+         * @return {@code true} si existe un nodo en la lista
          */
         @Override
         public boolean hasNext() {
             return actual != null;
         }
+
         /**
-         * Retorna el dato que el nodo actual almacena y mueve el puntero del nodo actual al siguiente
+         * Retorna el dato que el nodo actual almacena y mueve el puntero del
+         * nodo actual al siguiente nodo
+         *
          * @return el dato que el nodo actual almacena
          */
         @Override
@@ -94,6 +109,7 @@ public class Lista<T> implements Iterable<T> {
      * Almacena el largo de la lista
      */
     private int largo;
+
     /**
      * Constructor por defecto
      */
@@ -101,6 +117,7 @@ public class Lista<T> implements Iterable<T> {
         primero = null;
         ultimo = null;
     }
+
     /**
      * @return Devuelve <code>true</code> si la lista no contiene algún nodo,
      * <code>false</code> si tiene al menos un nodo
@@ -108,8 +125,10 @@ public class Lista<T> implements Iterable<T> {
     public boolean esVacio() {
         return primero == null;
     }
+
     /**
      * Agrega un nuevo nodo al final de la lista
+     *
      * @param dato_ que se almacenará al final de lista
      */
     public void agregarAlFinal(T dato_) {
@@ -124,6 +143,7 @@ public class Lista<T> implements Iterable<T> {
         }
         largo++;
     }
+
     /**
      *
      * @return iterador para la clase lista
@@ -133,4 +153,3 @@ public class Lista<T> implements Iterable<T> {
         return new ListaIterador(this);
     }
 }
-    
