@@ -20,6 +20,7 @@ public class ArbolB {
     public ArbolB() {
         raiz = null;
     }
+
     /**
      * Apunta a la raiz del árbol
      */
@@ -99,6 +100,35 @@ public class ArbolB {
      * @return {@code true} si existe un Destino con el código especificado
      */
     public boolean existe(int codigo) {
+        return existe(raiz, codigo);
+    }
+
+    /**
+     * Recorre las ramas buscando una coincidencia
+     *
+     * @param raiz
+     * @param codigo
+     * @return
+     */
+    private boolean existe(Rama raiz, int codigo) {
+        //Se llegó a una rama nula y no se encontró una coincidencia
+        if (raiz == null) {
+            return false;
+        }
+        //Busca una coincidencia en la rama
+        if (raiz.existe(codigo)) {
+            return true;
+        }
+        //Busca una coincidencia en las subramas
+        for (NodoB temp : raiz) {
+            //El dato es menor, busca en la subrama izquierda
+            //El dato es mayor y el siguiente es nulo, busca en la subrama derecha
+            if (codigo < temp.Dato().Codigo()) {
+                return existe(temp.izquierda, codigo);
+            } else if (codigo > temp.Dato().Codigo() && temp.siguiente == null) {
+                return existe(temp.derecha, codigo);
+            }
+        }
         return false;
     }
 
@@ -108,11 +138,42 @@ public class ArbolB {
      * @return destino almacenado en el árbol B con el código especificado
      */
     public Destino buscar(int codigo) {
-        return new Destino();
+        NodoB d = buscar(this.raiz, codigo);
+        return d != null ? d.Dato() : null;
     }
 
     /**
-     * Divide una rama que ya excedio el límit de > 4
+     * Recorre el árbol buscando en las ramas un destino que posea el código
+     * especificado
+     *
+     * @param raiz
+     * @param codigo
+     * @return
+     */
+    public NodoB buscar(Rama raiz, int codigo) {
+        //Se llegó a una rama nula y no se encontró una coincidencia
+        if (raiz == null) {
+            return null;
+        }
+        //Busca una coincidencia en la rama
+        if (raiz.existe(codigo)) {
+            return raiz.buscar(codigo);
+        }
+        //Busca una coincidencia en las subramas
+        for (NodoB temp : raiz) {
+            //El dato es menor, busca en la subrama izquierda
+            //El dato es mayor y el siguiente es nulo, busca en la subrama derecha
+            if (codigo < temp.Dato().Codigo()) {
+                return buscar(temp.izquierda, codigo);
+            } else if (codigo > temp.Dato().Codigo() && temp.siguiente == null) {
+                return buscar(temp.derecha, codigo);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Divide una rama que ya excedio el límite de > 4
      *
      * @param rama
      * @return

@@ -12,6 +12,7 @@ import java.util.Iterator;
  * @author otzoy
  */
 public class Rama implements Iterable<NodoB> {
+
     /**
      * Iterador para la clase Rama
      */
@@ -90,7 +91,7 @@ public class Rama implements Iterable<NodoB> {
     /**
      * Apuntador a la cabeza de la rama
      */
-    private NodoB  primero;
+    private NodoB primero;
 
     /**
      *
@@ -102,8 +103,8 @@ public class Rama implements Iterable<NodoB> {
 
     /**
      *
-     * @return devuelve {@code true} si la rama está vacía o
-     * <code>false</code> si no lo está
+     * @return devuelve {@code true} si la rama está vacía o <code>false</code>
+     * si no lo está
      */
     public boolean esVacio() {
         return primero == null;
@@ -114,9 +115,9 @@ public class Rama implements Iterable<NodoB> {
      *
      * @param nodo
      */
-    public void agregar(NodoB  nodo) {
+    public void agregar(NodoB nodo) {
         if (!esVacio()) {
-            NodoB  temp = primero;
+            NodoB temp = primero;
             while (temp != null) {
                 if (temp.Dato().Codigo() > nodo.Dato().Codigo()) {
                     if (temp != primero) {
@@ -142,7 +143,7 @@ public class Rama implements Iterable<NodoB> {
                     largo++;
                     return;
                 } else if (temp.Dato().Codigo() < nodo.Dato().Codigo()) {
-                    if (temp.siguiente == null){
+                    if (temp.siguiente == null) {
                         temp.derecha = nodo.izquierda;
                         nodo.anterior = temp;
                         temp.siguiente = nodo;
@@ -156,6 +157,34 @@ public class Rama implements Iterable<NodoB> {
             primero = nodo;
             largo++;
         }
+    }
+
+    /**
+     *
+     * @param codigo
+     * @return {@code true} si el codigo existe
+     */
+    public boolean existe(int codigo) {
+        for (NodoB temp : this) {
+            if (temp.Dato().Codigo() == codigo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param codigo
+     * @return {@code Destino} con el código especificado
+     */
+    public NodoB buscar(int codigo) {
+        for (NodoB temp : this) {
+            if (temp.Dato().Codigo() == codigo) {
+                return temp;
+            }
+        }
+        return null;
     }
 
     /**
