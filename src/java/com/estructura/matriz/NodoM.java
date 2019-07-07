@@ -13,46 +13,49 @@ import java.util.Iterator;
  *
  * @author otzoy
  */
-public class NodoM implements Iterable<NodoM>{
-    
+public class NodoM implements Iterable<NodoM> {
+
     /**
      * Iterador para la clase NodoM
      */
-    class NodoIterator implements Iterator<NodoM>{
+    class NodoIterator implements Iterator<NodoM> {
+
         /**
          * Apuntador al nodo actual
          */
         NodoM actual;
-        
+
         /**
          * Constructor por defecto
-         * @param nodo 
+         *
+         * @param nodo
          */
-        public NodoIterator(NodoM nodo){
+        public NodoIterator(NodoM nodo) {
             actual = nodo;
         }
-        
+
         /**
-         * 
+         *
          * @return {@code true} si el nodo actual no es nulo
          */
         @Override
-        public boolean hasNext(){
+        public boolean hasNext() {
             return actual != null;
         }
-        
+
         /**
          * Retorna el nodo actual y mueve el puntero hacia el nodo siguiente
+         *
          * @return nodo actual
          */
         @Override
-        public NodoM next(){
+        public NodoM next() {
             NodoM data = actual;
             actual = actual.siguiente;
             return data;
         }
     }
-    
+
     /**
      * Apuntadores de la matriz disperasa
      */
@@ -65,7 +68,7 @@ public class NodoM implements Iterable<NodoM>{
      * Mantiene las coordenadas del nodo
      */
     private final int idOrigen, idDestino;
-    
+
     /**
      * Dato que almacena el nodo
      */
@@ -104,7 +107,7 @@ public class NodoM implements Iterable<NodoM>{
         this.origen = null;
         this.destino = null;
     }
-    
+
     /**
      *
      * @return la ruta almacenada en el nodo
@@ -120,29 +123,29 @@ public class NodoM implements Iterable<NodoM>{
     public void Ruta(Ruta ruta_) {
         ruta = ruta_;
     }
-    
+
     /**
-     * 
+     *
      * @return {@code codigo} del origen del encabezado
      */
-    public int Origen(){
+    public int Origen() {
         return this.idOrigen;
     }
-    
+
     /**
-     * 
+     *
      * @return {@code codigo} del destino del encabezado
      */
-    public int Destino(){
+    public int Destino() {
         return this.idDestino;
     }
-    
+
     /**
-     * 
+     *
      * @return iterador para la clase NodoM
      */
     @Override
-    public Iterator<NodoM> iterator(){
+    public Iterator<NodoM> iterator() {
         return new NodoIterator(this);
     }
 }

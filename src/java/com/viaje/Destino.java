@@ -21,10 +21,10 @@ public class Destino {
      * Almacen el nombre del destino
      */
     private final String nombre;
+
     /**
      * Apuntador hacia alguna ruta relacionada con el destino;
      */
-
     /**
      * Constructor por defecto
      */

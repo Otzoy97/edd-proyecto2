@@ -319,13 +319,33 @@ public class Matriz {
             }
             return false;
         }
+
+        /**
+         * Obtiene la profundidad del árbolB
+         *
+         * @return
+         */
+        private int profundidad(Rama r) {
+            if (r == null) {
+                return 0;
+            }
+            for (NodoB n : r) {
+                return profundidad(n.izquierda) + 1;
+            }
+            return 0;
+        }
     }
+
     /**
      * Se utiliza para contar nodos, ver {@code buscarPos} en {@code ArbolB} --
      * No evidente
      */
     private static int cont;
 
+//    public void depth(){
+//        System.out.println(this.idDestino.profundidad(this.idDestino.raiz));
+//        System.out.println(this.idOrigen.profundidad(this.idOrigen.raiz));
+//    }
     /**
      * Encabezados
      */
@@ -464,10 +484,11 @@ public class Matriz {
             }
         }
     }
-    
+
     /**
      * Genera el script necesario para mostrar la matriz y los encabezados
-     * @return 
+     *
+     * @return
      */
     public String graficarMB() {
         if (idOrigen.esVacio()) {
@@ -475,12 +496,14 @@ public class Matriz {
         }
         StringBuilder sb = new StringBuilder();
         //Se debe utilizar el árbolB de origen para generar la matriz
-        sb.append(String.format("graph {\nnode[shape=record; fontsize = 8; width = 0.1; height = 0.1];\n%s\n}", graficarMB_Matriz(this.idOrigen.raiz)));
+        int p = this.idDestino.profundidad(this.idDestino.raiz);
+        sb.append(String.format("graph {\nnode[shape=record; fontsize = 8; width = 0.1; height = 0.1];\n%s\n%s\n%s\n}", graficarMB_Arbol(this.idOrigen.raiz, true, p), graficarMB_Arbol(this.idDestino.raiz, false, p), graficarMB_Matriz(this.idOrigen.raiz)));
         return sb.toString();
     }
-    
+
     /**
      * Genera el script para generar la gráfica del árbol y la matriz
+     *
      * @param raiz
      * @return script de la matriz
      */
@@ -515,13 +538,49 @@ public class Matriz {
         }
         return sb.toString();
     }
-    
-    private String graficarMB_Arbol(Rama raiz){
-        if(raiz == null) return "";
+
+    /**
+     *
+     * @param raiz de una cabecera árbolB
+     * @return
+     */
+    private String graficarMB_Arbol(Rama raiz, boolean esOrigen, int profundidad) {
+        if (raiz == null) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
+        //Crea la rama
+        if (esOrigen) {
+            sb.append(String.format("MG%d[label=\"%s\"; pos=\"%d,%d!\"; height = 0.01 ; width = 0.01];\n", raiz.hashCode(), raiz.espejoMB(), -profundidad, posOrigen(raiz.primero.Dato().Codigo())));
+
+        } else {
+            sb.append(String.format("MG%d[label=\"%s\"; pos=\"%d,%d!\"; height = 0.01 ; width = 0.01];\n", raiz.hashCode(), raiz.ramaMB(), posDestino(raiz.primero.Dato().Codigo()), this.dimension + profundidad));
+        }
+        int c_aux = !esOrigen ? 0 : raiz.Largo() * 2;
+        //Recorre la rama y enlaza los subramas
+        for (NodoB nb : raiz) {
+            if (nb.izquierda != null) {
+                sb.append(String.format("MG%d:f%d--MG%d;\n", raiz.hashCode(), c_aux, nb.izquierda.hashCode()));
+            }
+            //Enlaza a la matriz
+            if (nb.ruta != null) {
+                sb.append(String.format("MG%d:f%d--MG%d;\n", raiz.hashCode(), !esOrigen ? c_aux + 1 : c_aux - 1, nb.ruta.hashCode()));
+            }
+            c_aux = c_aux + (!esOrigen ? 2 : -2);
+            if (nb.siguiente == null && nb.derecha != null) {
+                sb.append(String.format("MG%d:f%d--MG%d;\n", raiz.hashCode(), c_aux, nb.derecha.hashCode()));
+            }
+        }
+        //Recorre el resto del árbol
+        for (NodoB nb : raiz) {
+            sb.append(graficarMB_Arbol(nb.izquierda, esOrigen, profundidad - 1));
+            if (nb.siguiente == null) {
+                sb.append(graficarMB_Arbol(nb.derecha, esOrigen, profundidad - 1));
+            }
+        }
         return sb.toString();
     }
-    
+
     /**
      * Localiza la posoción de un nodo con {@code clave} en la cabecera de
      * origenes

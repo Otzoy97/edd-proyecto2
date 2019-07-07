@@ -91,7 +91,7 @@ public class Rama implements Iterable<NodoB> {
     /**
      * Apuntador a la cabeza de la rama
      */
-    private NodoB primero;
+    public NodoB primero;
 
     /**
      *
@@ -189,20 +189,80 @@ public class Rama implements Iterable<NodoB> {
 
     /**
      * Determina la posición en la que se encuentra
+     *
      * @param codigo
-     * @return 
+     * @return
      */
-    public int buscarPos(int codigo){
+    public int buscarPos(int codigo) {
         int cod = 0;
-        for(NodoB temp : this){
-           if(temp.Dato().Codigo() == codigo)
-               return cod;
-           else 
-               cod++;
-        } 
+        for (NodoB temp : this) {
+            if (temp.Dato().Codigo() == codigo) {
+                return cod;
+            } else {
+                cod++;
+            }
+        }
         return cod;
     }
-    
+
+    /**
+     * Retorna un espejo de la rama para el árbol origen
+     *
+     * @return
+     */
+    public String espejoMB() {
+        StringBuilder sb = new StringBuilder();
+        contador = 1;
+        sb.append(String.format("{<f0>%s}", espejoMB(this.primero)));
+        return sb.toString();
+    }
+
+    private static int contador;
+
+    /**
+     * Retorna un script de la rama del arbol destino
+     *
+     * @return
+     */
+    public String ramaMB() {
+        StringBuilder sb = new StringBuilder();
+        contador = 1;
+        sb.append(String.format("<f0>%s", ramaMB(this.primero)));
+        return sb.toString();
+    }
+
+    /**
+     * Retorna un script para graficar la rama
+     *
+     * @param n
+     * @return
+     */
+    private String ramaMB(NodoB n) {
+        if (n == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("|<f%d>%d|<f%d>", contador++, n.Dato().Codigo(), contador++));
+        sb.append(ramaMB(n.siguiente));
+        return sb.toString();
+    }
+
+    /**
+     * Retorna un script para graficar la rama "espejo"
+     *
+     * @param n
+     * @return
+     */
+    private String espejoMB(NodoB n) {
+        if (n == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(espejoMB(n.siguiente));
+        sb.append(String.format("|<f%d>%d|<f%d>", contador++, n.Dato().Codigo(), contador++));
+        return sb.toString();
+    }
+
     /**
      *
      * @return iterador para la clase Rama

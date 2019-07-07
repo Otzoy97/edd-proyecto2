@@ -7,6 +7,7 @@ package com.estructura.arbolb;
 
 import com.viaje.Destino;
 import com.estructura.matriz.NodoM;
+
 /**
  *
  * @author otzoy
@@ -29,12 +30,13 @@ public class NodoB {
      * Puntero hacia alguna ruta;
      */
     public NodoM ruta;
+
     /**
      * Constructor por defecto
      *
      * @param dato_
      */
-    public NodoB (Destino dato_) {
+    public NodoB(Destino dato_) {
         dato = dato_;
         anterior = null;
         siguiente = null;
