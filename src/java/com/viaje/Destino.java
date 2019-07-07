@@ -24,7 +24,6 @@ public class Destino {
     /**
      * Apuntador hacia alguna ruta relacionada con el destino;
      */
-    private NodoM ruta;
 
     /**
      * Constructor por defecto
@@ -32,7 +31,6 @@ public class Destino {
     public Destino() {
         this.codigo = 0;
         this.nombre = null;
-        this.ruta = null;
     }
 
     /**
@@ -44,7 +42,6 @@ public class Destino {
     public Destino(int codigo, String nombre) {
         this.codigo = codigo;
         this.nombre = nombre;
-        this.ruta = null;
     }
 
     /**
@@ -61,22 +58,5 @@ public class Destino {
      */
     public String Nombre() {
         return nombre;
-    }
-
-    /**
-     * Cambia el nodo ruta
-     *
-     * @param ruta
-     */
-    public void nRuta(NodoM ruta) {
-        this.ruta = ruta;
-    }
-
-    /**
-     *
-     * @return el nodo ruta
-     */
-    public NodoM nRuta() {
-        return this.ruta;
     }
 }

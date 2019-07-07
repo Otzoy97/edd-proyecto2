@@ -188,6 +188,22 @@ public class Rama implements Iterable<NodoB> {
     }
 
     /**
+     * Determina la posición en la que se encuentra
+     * @param codigo
+     * @return 
+     */
+    public int buscarPos(int codigo){
+        int cod = 0;
+        for(NodoB temp : this){
+           if(temp.Dato().Codigo() == codigo)
+               return cod;
+           else 
+               cod++;
+        } 
+        return cod;
+    }
+    
+    /**
      *
      * @return iterador para la clase Rama
      */

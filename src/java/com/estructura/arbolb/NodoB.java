@@ -6,7 +6,7 @@
 package com.estructura.arbolb;
 
 import com.viaje.Destino;
-
+import com.estructura.matriz.NodoM;
 /**
  *
  * @author otzoy
@@ -25,7 +25,10 @@ public class NodoB {
      * Dato que almacena el nodo
      */
     private Destino dato;
-
+    /**
+     * Puntero hacia alguna ruta;
+     */
+    public NodoM ruta;
     /**
      * Constructor por defecto
      *
@@ -37,6 +40,7 @@ public class NodoB {
         siguiente = null;
         izquierda = null;
         derecha = null;
+        ruta = null;
     }
 
     /**
