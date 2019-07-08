@@ -403,6 +403,7 @@ public class Matriz {
             if (col.Origen() < origen) {
                 nuevo.abajo = col;
                 nuevo.destino = col.destino;
+                nuevo.origen = o;
                 col.arriba = nuevo;
                 col.destino = null;
                 o.ruta = nuevo;
@@ -430,6 +431,7 @@ public class Matriz {
             if (fila.Destino() > destino) {
                 nuevo.siguiente = fila;
                 nuevo.origen = fila.origen;
+                nuevo.destino = d;
                 fila.anterior = nuevo;
                 fila.origen = null;
                 o.ruta = nuevo;
@@ -471,6 +473,8 @@ public class Matriz {
                     nuevo.siguiente = fila;
                     o.ruta = nuevo;
                     o.ruta.siguiente.anterior = nuevo;
+                    o.ruta.siguiente.origen = null;
+                    o.ruta.origen = o;
                     //Enlaza la columna
                     nuevo.arriba = col;
                     nuevo.abajo = col.abajo;
@@ -484,6 +488,8 @@ public class Matriz {
                     nuevo.abajo = col;
                     d.ruta = nuevo;
                     d.ruta.abajo.arriba = nuevo;
+                    d.ruta.abajo.destino = null;
+                    d.ruta.destino = d;
                     //Enlaza la fila
                     nuevo.siguiente = fila.siguiente;
                     nuevo.anterior = fila;
@@ -512,7 +518,8 @@ public class Matriz {
     }
 
     /**
-     * Genera el script necesario para mostrar la matriz y los encabezados (neato)
+     * Genera el script necesario para mostrar la matriz y los encabezados
+     * (neato)
      *
      * @return
      */
@@ -549,12 +556,10 @@ public class Matriz {
                 for (NodoM pivote : temp.ruta) {
                     sb.append(String.format("MG%d[label=\"Q.%.2f\\n%.2f min\"; pos = \"%d,%d!\"];\n", pivote.hashCode(), pivote.Ruta().Costo(), pivote.Ruta().Tiempo(), posDestino(pivote.Destino()), posOrigen(pivote.Origen())));
                     //if (pivote.siguiente != null) {
-                    rs.append(String.format("MG%d%s", pivote.hashCode(), pivote.siguiente != null ? "--" : ";\n"));
-                    //}
+                    rs.append(String.format("MG%d%s", pivote.hashCode(), pivote.siguiente != null ? "--" : ";//siguiente\n"));
                     if (pivote.arriba != null) {
-                    cl.append(String.format("MG%d--MG%d;\n",pivote.hashCode(), pivote.arriba.hashCode()));
+                        cl.append(String.format("MG%d--MG%d;//arriba\n", pivote.hashCode(), pivote.arriba.hashCode()));
                     }
-                    //c_aux = 2 * c_aux + 1;
                 }
                 //rs.append(String.format("%s",rs.length()>0?";\n":""));
                 //cl.append(String.format("%s",cl.length()>0?";\n":""));
@@ -610,13 +615,97 @@ public class Matriz {
     }
 
     /**
-     * 
+     *
      * @return script del árbol B para dot
      */
-    public String graficarB_Arbol(){
-        return String.format("graph {\nnode[shape=record];splines=line;\n%s}",this.idDestino.graph(this.idDestino.raiz));
+    public String graficarB_Arbol() {
+        return String.format("graph {\nnode[shape=record];splines=line;\n%s}", this.idDestino.graph(this.idDestino.raiz));
     }
-    
+
+    /**
+     * Elimna un nodo en la coordenada dada
+     * @param origen coordenada fila
+     * @param destino coordenada columna
+     * @throws java.lang.Exception no se encuentra la ruta en las coordenadas dada
+     */
+    public void eliminar(int origen, int destino) throws Exception {
+        //Se asegura que los encabezados necesarios existan
+        if (!idOrigen.existe(origen) || !idDestino.existe(destino)) {
+            throw new Exception(String.format("No existen los destinos (%d, %d)", origen, destino));
+        }
+        //Recupera los destinos de las cabeceras
+        NodoB o = idOrigen.buscar(this.idOrigen.raiz, origen);
+        NodoB d = idDestino.buscar(this.idDestino.raiz, destino);
+        //Recupera las rutas alojads en ambos encabezados
+        NodoM col = d.ruta;
+        NodoM fila = o.ruta;
+        //Recorre las columnas y filas hasta encontrar una coincidencia
+        while (col != null && col.Origen() != origen) {
+            col = col.abajo;
+        }
+        while (fila != null && fila.Destino() != destino) {
+            fila = fila.siguiente;
+        }
+        //Nunca se encontró un dato y se llego a un nulo
+        if (col == null || fila == null) {
+            throw new Exception(String.format("No hay rutas alojadas en (%d, %d)", origen, destino));
+        }
+        //Se encontró una coincidenca
+        //Es una esquina (columna izquierda - fila superior)
+        if(col.destino != null && fila.origen != null){
+            //Enlaza el nuevo destino
+            d.ruta = col.abajo;
+            if (d.ruta != null){
+                d.ruta.arriba = null;
+                d.ruta.destino = d;
+            }
+            //Enlaza el nuevo origen
+            o.ruta = fila.siguiente;
+            if(o.ruta != null){
+                o.ruta.arriba = null;
+                o.ruta.origen = o;
+            }
+            return;
+        }
+        //Es un lateral de fila (columna izquierda)
+        if(col.destino == null && fila.origen != null){
+            //Enlaza el nuevo origen
+            o.ruta = fila.siguiente;
+            if(o.ruta != null){
+                o.ruta.arriba = null;
+                o.ruta.origen = o;
+            }
+            if(col.arriba != null)
+                col.arriba.abajo = col.abajo;
+            if(col.abajo != null)
+                col.abajo.arriba = col.arriba;
+            return;
+        }
+        //Es un lateral de columna (fila superior)
+        if(col.destino != null && fila.origen == null){
+            //Enlaza el nuevo destino
+            d.ruta = col.abajo;
+            if(d.ruta != null){
+                d.ruta.arriba = null;
+                d.ruta.destino = d;
+            }
+            if(fila.anterior != null)
+                fila.anterior.siguiente = fila.siguiente;
+            if(fila.siguiente != null)
+                fila.siguiente.anterior = fila.anterior;
+            return;
+        }
+        //Es un nodo interior
+        if(col.destino == null && fila.origen == null){
+            fila.anterior.siguiente = fila.siguiente;
+            col.arriba.abajo = col.abajo;
+            if(fila.siguiente != null)
+                fila.siguiente.anterior = fila.anterior;
+            if(col.abajo != null)
+                col.abajo.arriba = col.arriba;
+        }
+    }
+
     /**
      * Localiza la posoción de un nodo con {@code clave} en la cabecera de
      * origenes
