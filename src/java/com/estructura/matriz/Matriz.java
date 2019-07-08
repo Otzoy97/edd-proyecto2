@@ -242,7 +242,7 @@ public class Matriz {
                 sb.append(String.format("<f%d>|%d\\n%s|", contador++, temp.Dato().Codigo(), temp.Dato().Nombre()));
                 //sb.append("<f").append(contador++).append(">|").append(temp.Dato().Codigo()).append("|<f").append(contador).append(">");
             }
-            sb.append(String.format("<f%d>\"; shape = record];\n", contador));
+            sb.append(String.format("<f%d>\"];\n", contador));
             //Reinicia el contador
             contador = 0;
             //Recorre los nodos de la rama conectando con otros subarboles
@@ -342,10 +342,6 @@ public class Matriz {
      */
     private static int cont;
 
-//    public void depth(){
-//        System.out.println(this.idDestino.profundidad(this.idDestino.raiz));
-//        System.out.println(this.idOrigen.profundidad(this.idOrigen.raiz));
-//    }
     /**
      * Encabezados
      */
@@ -406,9 +402,11 @@ public class Matriz {
             //Verifica si el nuevo nodo a insertar es mayor que el nodo actual
             if (col.Origen() < origen) {
                 nuevo.abajo = col;
+                nuevo.destino = col.destino;
                 col.arriba = nuevo;
-                d.ruta = nuevo;
+                col.destino = null;
                 o.ruta = nuevo;
+                d.ruta = nuevo;
                 return;
             }
             //Recorre las celdas de las columnas
@@ -431,7 +429,9 @@ public class Matriz {
             //Verifica si el nodo a insertar es menor al nodo actual
             if (fila.Destino() > destino) {
                 nuevo.siguiente = fila;
+                nuevo.origen = fila.origen;
                 fila.anterior = nuevo;
+                fila.origen = null;
                 o.ruta = nuevo;
                 d.ruta = nuevo;
                 return;
@@ -454,7 +454,7 @@ public class Matriz {
             NodoM col = d.ruta;
             NodoM fila = o.ruta;
             //Recorre los nodos hasta encontrar la celda necesaria
-            while (col.abajo != null && col.abajo.Origen() <= origen) {
+            while (col.abajo != null && col.abajo.Origen() >= origen) {
                 col = col.abajo;
             }
             while (fila.siguiente != null && fila.siguiente.Destino() <= destino) {
@@ -467,6 +467,32 @@ public class Matriz {
             } else {
                 //Crea un nuevo nodo
                 NodoM nuevo = new NodoM(ruta, origen, destino);
+                if (fila.Destino() > destino) {
+                    nuevo.siguiente = fila;
+                    o.ruta = nuevo;
+                    o.ruta.siguiente.anterior = nuevo;
+                    //Enlaza la columna
+                    nuevo.arriba = col;
+                    nuevo.abajo = col.abajo;
+                    if (col.abajo != null) {
+                        col.abajo.abajo = nuevo;
+                    }
+                    col.abajo = nuevo;
+                    return;
+                }
+                if (col.Origen() < origen) {
+                    nuevo.abajo = col;
+                    d.ruta = nuevo;
+                    d.ruta.abajo.arriba = nuevo;
+                    //Enlaza la fila
+                    nuevo.siguiente = fila.siguiente;
+                    nuevo.anterior = fila;
+                    if (fila.siguiente != null) {
+                        fila.siguiente.anterior = nuevo;
+                    }
+                    fila.siguiente = nuevo;
+                    return;
+                }
                 //Enlaza la fila
                 nuevo.siguiente = fila.siguiente;
                 nuevo.anterior = fila;
@@ -478,7 +504,7 @@ public class Matriz {
                 nuevo.arriba = col;
                 nuevo.abajo = col.abajo;
                 if (col.abajo != null) {
-                    col.abajo.abajo = nuevo;
+                    col.abajo.arriba = nuevo;
                 }
                 col.abajo = nuevo;
             }
@@ -486,7 +512,7 @@ public class Matriz {
     }
 
     /**
-     * Genera el script necesario para mostrar la matriz y los encabezados
+     * Genera el script necesario para mostrar la matriz y los encabezados (neato)
      *
      * @return
      */
@@ -497,7 +523,7 @@ public class Matriz {
         StringBuilder sb = new StringBuilder();
         //Se debe utilizar el árbolB de origen para generar la matriz
         int p = this.idDestino.profundidad(this.idDestino.raiz);
-        sb.append(String.format("graph {\nnode[shape=record; fontsize = 8; width = 0.1; height = 0.1];\n%s\n%s\n%s\n}", graficarMB_Arbol(this.idOrigen.raiz, true, p), graficarMB_Arbol(this.idDestino.raiz, false, p), graficarMB_Matriz(this.idOrigen.raiz)));
+        sb.append(String.format("graph {\nnode[shape=record; fontsize = 8; width = 0.1; height = 0.1];\n%s\n%s\n%s}", graficarMB_Arbol(this.idOrigen.raiz, true, p), graficarMB_Arbol(this.idDestino.raiz, false, p), graficarMB_Matriz(this.idOrigen.raiz)));
         return sb.toString();
     }
 
@@ -511,26 +537,28 @@ public class Matriz {
         if (raiz == null) {
             return "";
         }
+        //int c_aux = 0;
         StringBuilder sb = new StringBuilder();
         for (NodoB temp : raiz) {
             sb.append(graficarMB_Matriz(temp.izquierda));
             if (temp.ruta != null) {
                 StringBuilder rs = new StringBuilder();
                 StringBuilder cl = new StringBuilder();
-                rs.append(String.format("MG%d", temp.ruta.hashCode()));
-                cl.append(String.format("MG%d", temp.ruta.hashCode()));
+                //rs.append(String.format("MG%d", temp.ruta.hashCode()));
+                //cl.append(String.format("MG%d", temp.ruta.hashCode()));
                 for (NodoM pivote : temp.ruta) {
                     sb.append(String.format("MG%d[label=\"Q.%.2f\\n%.2f min\"; pos = \"%d,%d!\"];\n", pivote.hashCode(), pivote.Ruta().Costo(), pivote.Ruta().Tiempo(), posDestino(pivote.Destino()), posOrigen(pivote.Origen())));
-                    if (pivote.siguiente != null) {
-                        rs.append(String.format("-- MG%d", pivote.siguiente.hashCode()));
+                    //if (pivote.siguiente != null) {
+                    rs.append(String.format("MG%d%s", pivote.hashCode(), pivote.siguiente != null ? "--" : ";\n"));
+                    //}
+                    if (pivote.arriba != null) {
+                    cl.append(String.format("MG%d--MG%d;\n",pivote.hashCode(), pivote.arriba.hashCode()));
                     }
-                    if (pivote.abajo != null) {
-                        cl.append(String.format("-- MG%d", pivote.abajo.hashCode()));
-                    }
+                    //c_aux = 2 * c_aux + 1;
                 }
-                rs.append(";\n");
-                cl.append(";\n");
-                sb.append(rs.toString()).append(cl.toString());
+                //rs.append(String.format("%s",rs.length()>0?";\n":""));
+                //cl.append(String.format("%s",cl.length()>0?";\n":""));
+                sb.append(rs.toString()).append(cl.toString());//.append("//\n");
             }
             if (temp.siguiente == null) {
                 sb.append(graficarMB_Matriz(temp.derecha));
@@ -564,7 +592,7 @@ public class Matriz {
             }
             //Enlaza a la matriz
             if (nb.ruta != null) {
-                sb.append(String.format("MG%d:f%d--MG%d;\n", raiz.hashCode(), !esOrigen ? c_aux + 1 : c_aux - 1, nb.ruta.hashCode()));
+                sb.append(String.format("MG%d:f%d--MG%d[style=dashed, color=grey];\n", raiz.hashCode(), !esOrigen ? c_aux + 1 : c_aux - 1, nb.ruta.hashCode()));
             }
             c_aux = c_aux + (!esOrigen ? 2 : -2);
             if (nb.siguiente == null && nb.derecha != null) {
@@ -581,6 +609,14 @@ public class Matriz {
         return sb.toString();
     }
 
+    /**
+     * 
+     * @return script del árbol B para dot
+     */
+    public String graficarB_Arbol(){
+        return String.format("graph {\nnode[shape=record];splines=line;\n%s}",this.idDestino.graph(this.idDestino.raiz));
+    }
+    
     /**
      * Localiza la posoción de un nodo con {@code clave} en la cabecera de
      * origenes
