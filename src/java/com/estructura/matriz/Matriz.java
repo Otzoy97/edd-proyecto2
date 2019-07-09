@@ -368,6 +368,18 @@ public class Matriz {
         dimension = 0;
     }
 
+    
+    /**
+     * 
+     * @param codigo
+     * @return nombre del país destino
+     */
+    public String nombreDestino(int codigo){
+        if (idOrigen.existe(codigo))
+            return idOrigen.buscar(codigo).Nombre();
+        return null;
+    }
+    
     /**
      * Agrega un nuevo destino a la matriz
      *
