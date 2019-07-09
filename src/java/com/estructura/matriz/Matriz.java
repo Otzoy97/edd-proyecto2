@@ -550,7 +550,7 @@ public class Matriz {
         StringBuilder sb = new StringBuilder();
         //Se debe utilizar el árbolB de origen para generar la matriz
         int p = this.idDestino.profundidad(this.idDestino.raiz);
-        sb.append(String.format("graph {\nnode[shape=record; fontsize = 8; width = 0.1; height = 0.1];\n%s\n%s\n%s}", graficarMB_Arbol(this.idOrigen.raiz, true, p), graficarMB_Arbol(this.idDestino.raiz, false, p), graficarMB_Matriz(this.idOrigen.raiz)));
+        sb.append(String.format("graph {\nnode[shape=record; fontsize = 9; width = 0.1; height = 0.1];\n%s\n%s\n%s}", graficarMB_Arbol(this.idOrigen.raiz, true, p), graficarMB_Arbol(this.idDestino.raiz, false, p), graficarMB_Matriz(this.idOrigen.raiz)));
         return sb.toString();
     }
 

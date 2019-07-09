@@ -266,7 +266,7 @@ public class TablaHash {
     public String dot() {
         StringBuilder sb = new StringBuilder();
         StringBuilder nodos = new StringBuilder();
-        sb.append("graph {\nsplines=line;\nrankdir = LR;\nnode[shape=record; fontsize = 8; width = 0.1; height = 0.1];\n");
+        sb.append("graph {\nsplines=line;\nrankdir = LR;\nnode[shape=record; fontsize = 9; width = 0.1; height = 0.1];\n");
         int c = 0;
         for (Nodo<Integer, Reservacion> n : this.th) {
             //Concatena un nodo que representa la tabla hash
