@@ -12,15 +12,15 @@ import com.estructura.lista.Lista;
 public class Reservacion {
     private final String nombreCliente; 
     private final float costo, tiempo;
-    private final Lista<Ruta> viaje;
+    private final Lista<String> viaje;
+    
     /**
      * 
      */
     public Reservacion(){
         nombreCliente = null;
-        //idReservacion = -1;
-        costo = -1;
-        tiempo = -1;
+        costo = 0;
+        tiempo = 0;
         viaje = null;
     }
     /**
@@ -30,7 +30,7 @@ public class Reservacion {
      * @param tiempo
      * @param viaje 
      */
-    public Reservacion(String nombreCliente,  float costo, float tiempo, Lista<Ruta> viaje) {
+    public Reservacion(String nombreCliente,  float costo, float tiempo, Lista<String> viaje) {
         this.nombreCliente = nombreCliente;
         this.costo = costo;
         this.tiempo = tiempo;
@@ -62,7 +62,7 @@ public class Reservacion {
      * 
      * @return el viaje de la reservación
      */
-    public Lista<Ruta> Viaje(){
+    public Lista<String> Viaje(){
         return viaje;
     }
 }
