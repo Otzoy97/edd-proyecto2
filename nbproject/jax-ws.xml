@@ -4,6 +4,12 @@
     <service name="DestinoWS">
       <implementation-class>com.ws.DestinoWS</implementation-class>
     </service>
+    <service name="RutaWS">
+      <implementation-class>com.ws.RutaWS</implementation-class>
+    </service>
+    <service name="ReservacionWS">
+      <implementation-class>com.ws.ReservacionWS</implementation-class>
+    </service>
   </services>
   <clients/>
 </jax-ws>
