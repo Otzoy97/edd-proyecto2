@@ -50,8 +50,8 @@ public class ReservacionWS {
      * @param llave 
      * @return  
      */
-    @WebMethod(operationName = "eliminarReservacion")
-    public String eliminarReservacion(@WebParam(name = "llave") int llave){
+    @WebMethod(operationName = "eliminarReservacionConLlave")
+    public String eliminarReservacionConLlave(@WebParam(name = "llave") int llave){
         try{
             th.eliminar(llave);
         } catch (Exception ex){
@@ -65,8 +65,8 @@ public class ReservacionWS {
      * @param llave
      * @return {@code true} si la llave existe en la tabla hash
      */
-    @WebMethod(operationName = "existeLlave")
-    public boolean existeLlave(@WebParam(name = "llave") int llave){
+    @WebMethod(operationName = "verificarLlave")
+    public boolean verificarLlave(@WebParam(name = "llave") int llave){
         return th.existeLlave(llave);
     }
     
@@ -75,8 +75,8 @@ public class ReservacionWS {
      * @param llave
      * @return 
      */
-    @WebMethod(operationName = "reservacion")
-    public Reservacion reservacion(@WebParam(name = "llave") int llave){
+    @WebMethod(operationName = "reservacionConLlave")
+    public Reservacion reservacionConLlave(@WebParam(name = "llave") int llave){
         return th.reservacion(llave);
     }
     
@@ -87,8 +87,8 @@ public class ReservacionWS {
      * @param nombre
      * @return 
      */
-    @WebMethod(operationName = "reservacionPorCliente")
-    public Reservacion[] reservacionPorCliente( @WebParam(name = "nombre") String nombre){
+    @WebMethod(operationName = "reservacionesDelCliente")
+    public Reservacion[] reservacionesDelCliente( @WebParam(name = "nombre") String nombre){
         return th.reservacionPorCliente(nombre);
     }
     
