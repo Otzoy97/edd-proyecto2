@@ -20,7 +20,7 @@ public class Lista<T> implements Iterable<T> {
      *
      * @param <T>
      */
-    class Nodo<T> {
+    public class Nodo<T> {
 
         /**
          * Apuntadores
@@ -36,10 +36,10 @@ public class Lista<T> implements Iterable<T> {
          *
          * @param dato_
          */
-        Nodo(T dato_) {
+        Nodo(T dato) {
             siguiente = null;
             anterior = null;
-            dato = dato_;
+            this.dato = dato;
         }
 
         /**
@@ -129,10 +129,10 @@ public class Lista<T> implements Iterable<T> {
     /**
      * Agrega un nuevo nodo al final de la lista
      *
-     * @param dato_ que se almacenará al final de lista
+     * @param dato que se almacenará al final de lista
      */
-    public void agregarAlFinal(T dato_) {
-        Nodo<T> nuevo = new Nodo<>(dato_);
+    public void agregarAlFinal(T dato) {
+        Nodo<T> nuevo = new Nodo<>(dato);
         if (!esVacio()) {
             nuevo.anterior = ultimo;
             ultimo.siguiente = nuevo;
@@ -144,6 +144,60 @@ public class Lista<T> implements Iterable<T> {
         largo++;
     }
 
+    /**
+     * Elimna un dato en el índice específicado
+     *
+     * @param indice desde 0 hasta n-1, siendo n el largo de la ista
+     */
+    public void eliminarEn(int indice) {
+        //Nada que eliminar
+        if (this.primero == null) {
+            return;
+        }
+        //Es el primero nodo
+        if (indice == 0) {
+            primero = primero.siguiente;
+            primero.anterior = null;
+            largo--;
+            return;
+        }
+        //Es el ultimo nodo
+        if (indice == largo - 1) {
+            ultimo = ultimo.anterior;
+            ultimo.siguiente = null;
+            largo--;
+            return;
+        }
+        Nodo aux;
+        //Es un nodo intermedio
+        if (indice > (largo - 1) / 2) {
+            aux = ultimo;
+            for (int i = (largo - 1); i != indice; i--) {
+                aux = aux.anterior;
+            }
+        } else {
+            aux = primero;
+            for (int i = 0; i != indice; i++) {
+                aux = aux.siguiente;
+            }
+        }
+        aux.anterior.siguiente = aux.siguiente;
+        aux.siguiente.anterior = aux.anterior;
+    }
+
+    /**
+     * Remueve el último nodo de la lista
+     * @return 
+     */
+    public Object eliminarAlFinal(){
+        if(this.ultimo == null)
+            return null;
+        T dat = ultimo.dato;
+        ultimo = ultimo.anterior;
+        ultimo.siguiente = null;
+        return dat;
+    }
+    
     /**
      *
      * @return iterador para la clase lista
