@@ -50,7 +50,7 @@ public class ReservacionWS {
      * @param llave 
      * @return  
      */
-    @WebMethod(operationName = "agregarReservacion")
+    @WebMethod(operationName = "eliminarReservacion")
     public String eliminarReservacion(@WebParam(name = "llave") int llave){
         try{
             th.eliminar(llave);
