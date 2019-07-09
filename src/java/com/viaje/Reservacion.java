@@ -11,7 +11,6 @@ import com.estructura.lista.Lista;
  */
 public class Reservacion {
     private final String nombreCliente; 
-    private final int idReservacion;
     private final float costo, tiempo;
     private final Lista<Ruta> viaje;
     /**
@@ -19,7 +18,7 @@ public class Reservacion {
      */
     public Reservacion(){
         nombreCliente = null;
-        idReservacion = -1;
+        //idReservacion = -1;
         costo = -1;
         tiempo = -1;
         viaje = null;
@@ -27,14 +26,12 @@ public class Reservacion {
     /**
      * 
      * @param nombreCliente
-     * @param idReservacion
      * @param costo
      * @param tiempo
      * @param viaje 
      */
-    public Reservacion(String nombreCliente, int idReservacion, float costo, float tiempo, Lista<Ruta> viaje) {
+    public Reservacion(String nombreCliente,  float costo, float tiempo, Lista<Ruta> viaje) {
         this.nombreCliente = nombreCliente;
-        this.idReservacion = idReservacion;
         this.costo = costo;
         this.tiempo = tiempo;
         this.viaje = viaje;
@@ -60,13 +57,7 @@ public class Reservacion {
     public String Cliente(){
         return nombreCliente;
     }
-    /**
-     * 
-     * @return el identificador de la reservación
-     */
-    public int Id(){
-        return idReservacion;
-    }
+    
     /**
      * 
      * @return el viaje de la reservación
