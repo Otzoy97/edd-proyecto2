@@ -592,10 +592,10 @@ public class Matriz {
         StringBuilder sb = new StringBuilder();
         //Crea la rama
         if (esOrigen) {
-            sb.append(String.format("MG%d[label=\"%s\"; pos=\"%d,%d!\"; height = 0.01 ; width = 0.01];\n", raiz.hashCode(), raiz.espejoMB(), -profundidad, posOrigen(raiz.primero.Dato().Codigo())));
+            sb.append(String.format("MG%d[label=\"%s\"; pos=\"%d,%d!\"];\n", raiz.hashCode(), raiz.espejoMB(), -profundidad, posOrigen(raiz.primero.Dato().Codigo())));
 
         } else {
-            sb.append(String.format("MG%d[label=\"%s\"; pos=\"%d,%d!\"; height = 0.01 ; width = 0.01];\n", raiz.hashCode(), raiz.ramaMB(), posDestino(raiz.primero.Dato().Codigo()), this.dimension + profundidad));
+            sb.append(String.format("MG%d[label=\"%s\"; pos=\"%d,%d!\"];\n", raiz.hashCode(), raiz.ramaMB(), posDestino(raiz.primero.Dato().Codigo()), this.dimension + profundidad));
         }
         int c_aux = !esOrigen ? 0 : raiz.Largo() * 2;
         //Recorre la rama y enlaza los subramas
