@@ -7,8 +7,10 @@ package com.estructura.matriz;
 
 import com.estructura.arbolb.NodoB;
 import com.estructura.arbolb.Rama;
+import com.estructura.lista.Lista;
 import com.viaje.Destino;
 import com.viaje.Ruta;
+import com.viaje.RutaD;
 
 /**
  * Matriz dispersa utilizada como una matriz de adyacencia cuyos encabezados
@@ -348,6 +350,11 @@ public class Matriz {
     private final ArbolB idOrigen, idDestino;
 
     /**
+     * Almacena las rutas de viaje calculadas en {@code generarViajes}
+     */
+    private static Lista<Lista<RutaD>> viaje;
+
+    /**
      * Mantiene el número de filas y columnas del árbol
      */
     private int dimension;
@@ -374,6 +381,7 @@ public class Matriz {
     }
 
     /**
+     * Agrega una nueva ruta
      *
      * @param origen
      * @param destino
@@ -624,9 +632,11 @@ public class Matriz {
 
     /**
      * Elimna un nodo en la coordenada dada
+     *
      * @param origen coordenada fila
      * @param destino coordenada columna
-     * @throws java.lang.Exception no se encuentra la ruta en las coordenadas dada
+     * @throws java.lang.Exception no se encuentra la ruta en las coordenadas
+     * dada
      */
     public void eliminar(int origen, int destino) throws Exception {
         //Se asegura que los encabezados necesarios existan
@@ -652,58 +662,172 @@ public class Matriz {
         }
         //Se encontró una coincidenca
         //Es una esquina (columna izquierda - fila superior)
-        if(col.destino != null && fila.origen != null){
+        if (col.destino != null && fila.origen != null) {
             //Enlaza el nuevo destino
             d.ruta = col.abajo;
-            if (d.ruta != null){
+            if (d.ruta != null) {
                 d.ruta.arriba = null;
                 d.ruta.destino = d;
             }
             //Enlaza el nuevo origen
             o.ruta = fila.siguiente;
-            if(o.ruta != null){
+            if (o.ruta != null) {
                 o.ruta.arriba = null;
                 o.ruta.origen = o;
             }
             return;
         }
         //Es un lateral de fila (columna izquierda)
-        if(col.destino == null && fila.origen != null){
+        if (col.destino == null && fila.origen != null) {
             //Enlaza el nuevo origen
             o.ruta = fila.siguiente;
-            if(o.ruta != null){
+            if (o.ruta != null) {
                 o.ruta.arriba = null;
                 o.ruta.origen = o;
             }
-            if(col.arriba != null)
+            if (col.arriba != null) {
                 col.arriba.abajo = col.abajo;
-            if(col.abajo != null)
+            }
+            if (col.abajo != null) {
                 col.abajo.arriba = col.arriba;
+            }
             return;
         }
         //Es un lateral de columna (fila superior)
-        if(col.destino != null && fila.origen == null){
+        if (col.destino != null && fila.origen == null) {
             //Enlaza el nuevo destino
             d.ruta = col.abajo;
-            if(d.ruta != null){
+            if (d.ruta != null) {
                 d.ruta.arriba = null;
                 d.ruta.destino = d;
             }
-            if(fila.anterior != null)
+            if (fila.anterior != null) {
                 fila.anterior.siguiente = fila.siguiente;
-            if(fila.siguiente != null)
+            }
+            if (fila.siguiente != null) {
                 fila.siguiente.anterior = fila.anterior;
+            }
             return;
         }
         //Es un nodo interior
-        if(col.destino == null && fila.origen == null){
+        if (col.destino == null && fila.origen == null) {
             fila.anterior.siguiente = fila.siguiente;
             col.arriba.abajo = col.abajo;
-            if(fila.siguiente != null)
+            if (fila.siguiente != null) {
                 fila.siguiente.anterior = fila.anterior;
-            if(col.abajo != null)
+            }
+            if (col.abajo != null) {
                 col.abajo.arriba = col.arriba;
+            }
         }
+    }
+
+    /**
+     * Genera una lista de viajes
+     *
+     * @param origen
+     * @param destino
+     * @return
+     */
+    public Lista<Lista<RutaD>> generarViajes(int origen, int destino) {
+        NodoM m = destinos(origen);
+        //Verifica que no sea nulo
+        if (m != null) {
+            //Inicializa la lista de listas, limpiando cualquier dato anteriormente alojado
+            viaje = new Lista();
+            Lista<RutaD> lista = new Lista();
+            //Agrega el nodo dummy inicial
+            lista.agregarAlFinal(new RutaD(origen, null));
+            //Genera los viajes necesarios
+            viajes(m, destino, lista);
+            //Devuelve la lista de listas
+            return viaje;
+        }
+        return null;
+    }
+
+    /**
+     * Calcula todas las rutas posible desde el nodo origen al idDestino
+     *
+     * @param origen
+     * @param idDestino
+     */
+    private void viajes(NodoM origen, int idDestino, Lista<RutaD> ruta) {
+        if (origen == null) {
+            return;
+        }
+        //Por cada nodo destino de origen, se hará un viaje 
+        for (NodoM m : origen) {
+            if (m.Destino() == idDestino) {
+                //Se llegó a un destino 
+                //Copia la lista -ruta- y la agrega a la lista de listas -viaje-
+                Lista<RutaD> l = new Lista();
+                for (RutaD rd : ruta) {
+                    l.agregarAlFinal(new RutaD(rd.destino, rd.ruta));
+                }
+                l.agregarAlFinal(new RutaD(m.Destino(), m.Ruta()));
+                viaje.agregarAlFinal(l);
+            } else if (!existe(ruta, m.Destino())) {
+                //Si el idDestino no existe ya previamente en la lista -ruta-
+                //Se agrega a la lista y se hace un viaje desde ese destino
+                ruta.agregarAlFinal(new RutaD(m.Destino(), m.Ruta()));
+                //Recupera los destino del origen con id idDestino
+                NodoM md = destinos(m.Destino());
+                //Si no es nulo se hace un viaje a esos destinos
+                if (md != null) {
+                    //Se copia la lista de ruta
+                    Lista<RutaD> l = new Lista();
+                    for (RutaD rd : ruta) {
+                        l.agregarAlFinal(new RutaD(rd.destino, rd.ruta));
+                    }
+                    //Se elimina la última posición agregada a la ruta
+                    ruta.eliminarAlFinal();
+                    //Se hace un viaje con la lista que se copió
+                    viajes(md, idDestino, l);
+                }
+            }
+        }
+    }
+
+    /**
+     * Determina si ya existe un destino en la lista
+     *
+     * @param l
+     * @param i
+     * @return {@code true} si se encuentra una coincidencia
+     */
+    private boolean existe(Lista<RutaD> l, int i) {
+        for (RutaD d : l) {
+            if (d.destino == i) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param id
+     * @return la primera ruta del destino
+     */
+    private NodoM destinos(int id) {
+        NodoB nb = this.idOrigen.buscar(this.idOrigen.raiz, id);
+        return nb.ruta != null ? nb.ruta : null;
+    }
+
+    /**
+     *
+     * @param l
+     * @param i
+     * @return
+     */
+    private Ruta buscar(Lista<RutaD> l, int i) {
+        for (RutaD r : l) {
+            if (r.destino == i) {
+                return r.ruta;
+            }
+        }
+        return null;
     }
 
     /**
