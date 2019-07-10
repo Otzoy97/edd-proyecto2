@@ -585,26 +585,20 @@ public class Matriz {
         if (raiz == null) {
             return "";
         }
-        //int c_aux = 0;
         StringBuilder sb = new StringBuilder();
         for (NodoB temp : raiz) {
             sb.append(graficarMB_Matriz(temp.izquierda));
             if (temp.ruta != null) {
                 StringBuilder rs = new StringBuilder();
                 StringBuilder cl = new StringBuilder();
-                //rs.append(String.format("MG%d", temp.ruta.hashCode()));
-                //cl.append(String.format("MG%d", temp.ruta.hashCode()));
                 for (NodoM pivote : temp.ruta) {
                     sb.append(String.format("MG%d[label=\"Q.%.2f\\n%.2f min\"; pos = \"%d,%d!\"];\n", pivote.hashCode(), pivote.Ruta().Costo(), pivote.Ruta().Tiempo(), posDestino(pivote.Destino()), posOrigen(pivote.Origen())));
-                    //if (pivote.siguiente != null) {
                     rs.append(String.format("MG%d%s", pivote.hashCode(), pivote.siguiente != null ? "--" : ";//siguiente\n"));
                     if (pivote.arriba != null) {
                         cl.append(String.format("MG%d--MG%d;//arriba\n", pivote.hashCode(), pivote.arriba.hashCode()));
                     }
                 }
-                //rs.append(String.format("%s",rs.length()>0?";\n":""));
-                //cl.append(String.format("%s",cl.length()>0?";\n":""));
-                sb.append(rs.toString()).append(cl.toString());//.append("//\n");
+                sb.append(rs.toString()).append(cl.toString());
             }
             if (temp.siguiente == null) {
                 sb.append(graficarMB_Matriz(temp.derecha));
@@ -705,17 +699,17 @@ public class Matriz {
             //Enlaza el nuevo origen
             o.ruta = fila.siguiente;
             if (o.ruta != null) {
-                o.ruta.arriba = null;
+                o.ruta.anterior = null;
                 o.ruta.origen = o;
             }
             return;
         }
-        //Es un lateral de fila (columna izquierda)
+        //Es un lateral de fila (columna lateral izquierda)
         if (col.destino == null && fila.origen != null) {
             //Enlaza el nuevo origen
             o.ruta = fila.siguiente;
             if (o.ruta != null) {
-                o.ruta.arriba = null;
+                o.ruta.anterior = null;
                 o.ruta.origen = o;
             }
             if (col.arriba != null) {
