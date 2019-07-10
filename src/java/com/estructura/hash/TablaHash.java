@@ -204,12 +204,12 @@ public class TablaHash {
         if (n.length() < 3) {
             int k = 0;
             for (int i = 0; i < n.length() - 1; i++) {
-                k += n.codePointAt(i);
+                k += ((int)n.charAt(i));
             }
             return k % th.length;
         }
         //Tiene suficientes letras
-        return (n.codePointAt(0) + n.codePointAt(1) + n.codePointAt(2)) % th.length;
+        return (((int)n.charAt(0)) + ((int)n.charAt(1)) +  ((int)n.charAt(2))) % th.length;
     }
 
     /**
