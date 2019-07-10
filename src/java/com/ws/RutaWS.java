@@ -15,14 +15,14 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 
 /**
- *
+ * 
  * @author otzoy
  */
 @WebService(serviceName = "RutaWS")
 public class RutaWS {
 
     /**
-     * 
+     * Agrega una nueva ruta
      * @param origen
      * @param destino
      * @param costoRuta
@@ -67,6 +67,24 @@ public class RutaWS {
     @WebMethod(operationName = "generarViajes")
     public Lista<Lista<RutaD>> generarViajes(@WebParam(name = "origen") int origen,@WebParam(name = "destino") int destino){
         return m.generarViajes(origen, destino);
+    }
+    
+    /**
+     * 
+     * @return Base64 de la imagen del grafo de rutas que se obtiene de la matriz de adyacencia
+     */
+    @WebMethod(operationName = "generarGrafoRutas")
+    public String generarGrafoRutas(){
+        //Recupera el script de la matriz
+        String str = m.generarGrafo();
+        //Escriba un archivo con nombre -dotMB- y extensión -.dot-
+        Archivo.escribirArchivo(str,"dotGR", ".dot");
+        //Ejecuta un comando en el cmd
+        Archivo.generarGrafico("neato -Tbmp dotGR.dot -o GR.bmp");
+        //Elimina el archivo -dotMB-
+        Archivo.eliminarArchivo("dotGR.dot");
+        //Genera un base65;
+        return Archivo.toBase64("GR.bmp");
     }
     
     /**
