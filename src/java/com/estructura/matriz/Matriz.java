@@ -368,18 +368,18 @@ public class Matriz {
         dimension = 0;
     }
 
-    
     /**
-     * 
+     *
      * @param codigo
      * @return nombre del país destino
      */
-    public String nombreDestino(int codigo){
-        if (idOrigen.existe(codigo))
+    public String nombreDestino(int codigo) {
+        if (idOrigen.existe(codigo)) {
             return idOrigen.buscar(codigo).Nombre();
+        }
         return null;
     }
-    
+
     /**
      * Agrega un nuevo destino a la matriz
      *
@@ -422,7 +422,7 @@ public class Matriz {
             //Verifica si el nuevo nodo a insertar es mayor que el nodo actual
             if (col.Origen() < origen) {
                 nuevo.abajo = col;
-                nuevo.destino = col.destino;
+                nuevo.destino = d;
                 nuevo.origen = o;
                 col.arriba = nuevo;
                 col.destino = null;
@@ -450,7 +450,7 @@ public class Matriz {
             //Verifica si el nodo a insertar es menor al nodo actual
             if (fila.Destino() > destino) {
                 nuevo.siguiente = fila;
-                nuevo.origen = fila.origen;
+                nuevo.origen = o;
                 nuevo.destino = d;
                 fila.anterior = nuevo;
                 fila.origen = null;
@@ -490,26 +490,47 @@ public class Matriz {
                 //Crea un nuevo nodo
                 NodoM nuevo = new NodoM(ruta, origen, destino);
                 if (fila.Destino() > destino) {
+                    //Enlaza el nuevo nodo a la fila ya existentes
                     nuevo.siguiente = fila;
+                    //Enlaza hacia los encabezados
+                    nuevo.origen = o;
+                    //Evita perder la fila que ya existe 
+                    fila.anterior = nuevo;
+                    //Elimina los apuntadores a encabezado de la fila
+                    fila.origen = null;
+                    //Enlaza el nuevo al encabezado
                     o.ruta = nuevo;
-                    o.ruta.siguiente.anterior = nuevo;
-                    o.ruta.siguiente.origen = null;
-                    o.ruta.origen = o;
-                    //Enlaza la columna
-                    nuevo.arriba = col;
-                    nuevo.abajo = col.abajo;
-                    if (col.abajo != null) {
-                        col.abajo.abajo = nuevo;
+                    //Si es una esquina reasigna las columnas
+                    if (fila.destino == null){
+                        //No es una esquina
+                        nuevo.arriba = col;
+                        nuevo.abajo = col.abajo;
+                        if(col.abajo != null)
+                            col.abajo.arriba = nuevo;
+                        col.abajo = nuevo;
+                    } else {
+                        //Es una esquina
+                        nuevo.abajo = col;
+                        nuevo.destino = d;
+                        col.arriba = nuevo;
+                        col.destino = null;
+                        d.ruta = nuevo;
                     }
-                    col.abajo = nuevo;
                     return;
                 }
                 if (col.Origen() < origen) {
+                    //Enlaza el nuevo nodo a la columna que ya existe
                     nuevo.abajo = col;
+                    //Enlaza hacia el encabezado
+                    nuevo.destino = d;
+                    //Evita erder la columna ya existente
+                    col.arriba = nuevo;
+                    //Elimna el apuntador a encabezado de la columna
+                    col.destino = null;
+                    //Enlaza el nuevo encabezado
                     d.ruta = nuevo;
-                    d.ruta.abajo.arriba = nuevo;
-                    d.ruta.abajo.destino = null;
-                    d.ruta.destino = d;
+                    //Acá no se realiza la validación de esquino, ya que si ese fuera el caso
+                    //eso se captaría en el anterior if
                     //Enlaza la fila
                     nuevo.siguiente = fila.siguiente;
                     nuevo.anterior = fila;
@@ -799,6 +820,107 @@ public class Matriz {
                 }
             }
         }
+    }
+
+    /**
+     * Genera una grafo de rutas utilizando las conexiones de la matriz de
+     * adyacencia
+     *
+     * @return script del grafo de rutas , puede se {@code null}
+     */
+    public String generarGrafo() {
+        if (this.idOrigen.esVacio()) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("graph {\nnode[fontsize = 8; width = 0.1; height = 0.1];\nedge[fontsize = 8];\n%s\n}", generarGrafo(this.idOrigen.raiz)));
+        return sb.toString();
+    }
+
+    /**
+     * Recorre de forma prefija la matriz
+     *
+     * @param raiz
+     * @return
+     */
+    private String generarGrafo(Rama raiz) {
+        if (raiz == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        //Llevará el control de los apuntadores hacia los subárboles
+        int contador = 0;
+        //Recorre los nodos de la rama conectando con otros subarboles
+        for (NodoB temp : raiz) {
+            sb.append(generarGrafo(temp.izquierda));
+            //Recorre el nodo ruta
+            //Añade el nodo cabecera 
+            if (temp.ruta != null) {
+                int pos_o = posOrigen(temp.Dato().Codigo());
+                int pos_d;
+                for (NodoM s : temp.ruta) {
+                    pos_d = posDestino(s.Destino());
+                    if (pos_o >= pos_d) {
+                        //Evita declaración de nodos duplicados
+                        if (sb.indexOf(String.format("NM%d", temp.ruta.Origen())) == -1) {
+                            sb.append(String.format("NM%d[label=\"%s\"];\n", temp.ruta.Origen(), nombreDestino(s.Origen())));
+                        }
+                        //Evita que la conexión del nodo s con un nodo siguiente que esté fuera de los parametros
+                        //if (pos_o > pos_d){// && s.siguiente != null) { //s != origen) {
+                        sb.append(String.format("NM%d -- NM%d[label=\"Q.%.2f\\n%.2f min\"];\n", temp.ruta.Origen(), s.Destino(), s.Ruta().Costo(), s.Ruta().Tiempo()));
+//                        } else if (s.siguiente == null) {
+//                            sb.append(String.format("NM%d -- NM%d[label=\"Q.%.2f\\n%.2f min\"];\n", temp.ruta.Origen(), s.Destino(), s.Ruta().Costo(), s.Ruta().Tiempo()));
+                        //}
+                    } else {
+                        break;
+                    }
+                }
+                //Una vez agregados los nodos agrega la cabecera del árbol
+                //Verifica que el nodo no haya sido agregado ya
+                if (sb.indexOf(String.format("NM%d", temp.ruta.Origen())) == -1) {
+                    sb.append(String.format("NM%d[label=\"%s\"];\n", temp.ruta.Origen(), nombreDestino(temp.ruta.Origen())));
+                }
+            }
+            if (temp.siguiente == null) {
+                sb.append(generarGrafo(temp.derecha));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     *
+     * @param origen
+     * @return
+     */
+    private String generarGrafo(NodoB origen, int idOrigen) {
+        if (origen == null || origen.ruta == null) {
+            return "";
+            //return String.format("NM%d[label=\"%s\"];\n", origen.ruta.Origen(), nombreDestino(origen.ruta.Origen()));
+        }
+        //Aquí se concatenará todo el texto
+        StringBuilder sb = new StringBuilder();
+        //Recupera la posición a la cual se llegará con el siguiente recorrido
+        int pos_o = posOrigen(idOrigen);
+        int pos_d;
+        for (NodoM s : origen.ruta) {
+            pos_d = posDestino(s.Destino());
+            if (pos_o >= pos_d) {
+                //Evita declaración de nodos duplicados
+                if (sb.indexOf(String.format("NM%d", idOrigen)) == -1) {
+                    sb.append(String.format("NM%d[label=\"%s\"];\n", idOrigen, nombreDestino(s.Origen())));
+                }
+                //Evita que la conexión del nodo s con un nodo siguiente que esté fuera de los parametros
+                if (pos_o < pos_d && s.siguiente != null) { //s != origen) {
+                    sb.append(String.format("NM%d -- NM%d[label=\"Q.%.2f\\n%.2f min\"];\n", idOrigen, s.siguiente.Destino(), s.Ruta().Costo(), s.Ruta().Tiempo()));
+                } else if (s.siguiente != null) {
+
+                }
+            } else {
+                break;
+            }
+        }
+        return sb.toString();
     }
 
     /**
