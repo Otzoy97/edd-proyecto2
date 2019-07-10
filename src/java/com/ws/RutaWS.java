@@ -77,6 +77,8 @@ public class RutaWS {
     public String generarGrafoRutas(){
         //Recupera el script de la matriz
         String str = m.generarGrafo();
+        if(str==null)return "";
+        if(str.equals("")) return "";
         //Escriba un archivo con nombre -dotMB- y extensión -.dot-
         Archivo.escribirArchivo(str,"dotGR", ".dot");
         //Ejecuta un comando en el cmd
@@ -95,6 +97,30 @@ public class RutaWS {
     public String generarMatriz(){
         //Recupera el script de la matriz
         String str = m.graficarMB();
+        if(str==null)return "";
+        if(str.equals("")) return "";
+        //Escriba un archivo con nombre -dotMB- y extensión -.dot-
+        Archivo.escribirArchivo(str,"dotMB", ".dot");
+        //Ejecuta un comando en el cmd
+        Archivo.generarGrafico("neato -Tbmp dotMB.dot -o MB.bmp");
+        //Elimina el archivo -dotMB-
+        Archivo.eliminarArchivo("dotMB.dot");
+        //Genera un base65;
+        return Archivo.toBase64("MB.bmp");
+    }
+    
+        /**
+     * 
+     * @param origen
+     * @param destino
+     * @return Base64 de la imagen de la matriz y encabezado del árbol B
+     */
+    @WebMethod(operationName = "reporteRutaEn")
+    public String reporteRutaEn(@WebParam(name = "origen")int origen,  @WebParam(name = "destino")int destino){
+        //Recupera el script de la matriz
+        String str = m.verRutaEn(origen, destino);
+        if(str==null)return "";
+        if(str.equals("")) return "";
         //Escriba un archivo con nombre -dotMB- y extensión -.dot-
         Archivo.escribirArchivo(str,"dotMB", ".dot");
         //Ejecuta un comando en el cmd

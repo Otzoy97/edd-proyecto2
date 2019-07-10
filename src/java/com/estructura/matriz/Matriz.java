@@ -501,12 +501,13 @@ public class Matriz {
                     //Enlaza el nuevo al encabezado
                     o.ruta = nuevo;
                     //Si es una esquina reasigna las columnas
-                    if (fila.destino == null){
+                    if (fila.destino == null) {
                         //No es una esquina
                         nuevo.arriba = col;
                         nuevo.abajo = col.abajo;
-                        if(col.abajo != null)
+                        if (col.abajo != null) {
                             col.abajo.arriba = nuevo;
+                        }
                         col.abajo = nuevo;
                     } else {
                         //Es una esquina
@@ -913,6 +914,36 @@ public class Matriz {
         for (RutaD r : l) {
             if (r.destino == i) {
                 return r.ruta;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Genera un script dot que muestra los datos de un ruta en particular
+     *
+     * @param origen
+     * @param destino
+     * @return
+     */
+    public String verRutaEn(int origen, int destino) {
+        //Se asegura que los encabezados necesarios existan
+        if (!idOrigen.existe(origen) || !idDestino.existe(destino)) {
+            return "";
+        }
+        //Recupera la ruta especificada
+        //Recupera los destinos de las cabeceras
+        NodoB o = idOrigen.buscar(this.idOrigen.raiz, origen);
+        //Recupera las rutas alojads en el encabezado
+        NodoM fila = o.ruta;
+        //Recorre el origen
+        for (NodoM cell : fila) {
+            if (cell.Destino() == destino) {
+                //Se encontró una ruta
+                StringBuilder sb = new StringBuilder();
+                sb.append("graph{");
+                sb.append(String.format("node[label=\"{De: %s|A: %s|Q%.2f|%.2f min|%s}\"];", nombreDestino(origen), nombreDestino(destino), cell.Ruta().Costo(), cell.Ruta().Tiempo(), cell.Ruta().Piloto()));
+                sb.append("}");
             }
         }
         return null;

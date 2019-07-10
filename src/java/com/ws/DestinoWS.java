@@ -42,6 +42,8 @@ public class DestinoWS {
     public String generarArbol(){
         //Recupera el script de la matriz
         String str = m.graficarB_Arbol();
+        if(str==null)return "";
+        if(str.equals("")) return "";
         //Escriba un archivo con nombre -dotMB- y extensión -.dot-
         Archivo.escribirArchivo(str,"dotTB", ".dot");
         //Ejecuta un comando en el cmd
