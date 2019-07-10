@@ -5,65 +5,100 @@
  */
 package com.viaje;
 
+import java.util.Random;
+
 /**
  *
  * @author otzoy
  */
 public class Ruta {
+
     private float costo, tiempo;
-    private String piloto;
+    private int[] piloto;
+    private byte[] llave;
+
     /**
-     * Constructor por defecto
+     *
+     * @param costo
+     * @param tiempo
+     * @param piloto
      */
-    public Ruta(){
-        costo = 0;
-        tiempo = 0;
-        piloto = null;
+    public Ruta(float costo, float tiempo, String piloto) {
+        this.costo = costo;
+        this.tiempo = tiempo;
+        encriptar(piloto);
     }
+
     /**
-     * 
-     * @param costo_
-     * @param tiempo_
-     * @param piloto_ 
+     * Encripta el nombre del piloto Genera una llave aleatoria de bytes y
+     * realiza un cifrado Vernam con los ASCII de la cadena inicial
+     *
+     * @param s
      */
-    public Ruta(float costo_, float tiempo_, String piloto_){
-        costo = costo_;
-        tiempo = tiempo_;
-        piloto = piloto_;
+    private void encriptar(String s) {
+        //Crea una llave única de tamaño del nombre del piloto
+        llave = new byte[s.length()];
+        piloto = new int[s.length()];
+        //Se llena con bytes random
+        new Random().nextBytes(llave);
+        //Reescriba el nombre del piloto
+        for (int i = 0; i < llave.length; i++) {
+            piloto[i] = llave[i] + ((int) s.charAt(i));
+        }
     }
+
     /**
-     * 
+     *
      * @return el costo de la ruta (en quetzales)
      */
-    public float Costo(){
+    public float Costo() {
         return costo;
     }
+
     /**
-     * 
+     *
      * @return el tiempo de la ruta (en minutos)
      */
-    public float Tiempo(){
+    public float Tiempo() {
         return tiempo;
     }
+
     /**
      * Modifica el nombre del piloto
-     * @param piloto_ 
+     *
+     * @param piloto
      */
-    public void Piloto(String piloto_){
-        piloto = piloto_;
+    public void Piloto(String piloto) {
+        encriptar(piloto);
     }
+
     /**
      * Modifica el costo de la ruta (en quetzales)
-     * @param costo_ 
+     *
+     * @param costo_
      */
-    public void Costo(float costo_){
+    public void Costo(float costo_) {
         costo = costo_;
     }
+
     /**
      * Modifica el tiempo de la ruta (en minutos)
-     * @param tiempo_ 
+     *
+     * @param tiempo_
      */
-    public void Tiempo(float tiempo_){
+    public void Tiempo(float tiempo_) {
         tiempo = tiempo_;
+    }
+
+    /**
+     * 
+     * @return el nombre del piloto -descifrado-
+     */
+    public String Piloto() {
+        String aux = "";
+        for (int i = 0; i < this.piloto.length; i++) {
+            aux += (char) (this.piloto[i]-this.llave[i]);
+        }
+        return aux;
     }
 }
