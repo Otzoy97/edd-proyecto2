@@ -827,7 +827,7 @@ public class Matriz {
             return null;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("graph {\nnode[fontsize = 8; width = 0.1; height = 0.1];\nedge[fontsize = 8];\n%s\n}", generarGrafo(this.idOrigen.raiz)));
+        sb.append(String.format("graph {\nnode[fontsize = 8; width = 0.1; height = 0.1;shape=box];\nedge[fontsize = 8];\n%s}", generarGrafo(this.idOrigen.raiz)));
         return sb.toString();
     }
 
@@ -857,14 +857,9 @@ public class Matriz {
                     if (pos_o >= pos_d) {
                         //Evita declaración de nodos duplicados
                         if (sb.indexOf(String.format("NM%d", temp.ruta.Origen())) == -1) {
-                            sb.append(String.format("NM%d[label=\"%s\"];\n", temp.ruta.Origen(), nombreDestino(s.Origen())));
+                            sb.append(String.format("NM%d[label=\"%d\\n%s\"];\n", s.Origen(), s.Origen(), nombreDestino(s.Origen())));
                         }
-                        //Evita que la conexión del nodo s con un nodo siguiente que esté fuera de los parametros
-                        //if (pos_o > pos_d){// && s.siguiente != null) { //s != origen) {
                         sb.append(String.format("NM%d -- NM%d[label=\"Q.%.2f\\n%.2f min\"];\n", temp.ruta.Origen(), s.Destino(), s.Ruta().Costo(), s.Ruta().Tiempo()));
-//                        } else if (s.siguiente == null) {
-//                            sb.append(String.format("NM%d -- NM%d[label=\"Q.%.2f\\n%.2f min\"];\n", temp.ruta.Origen(), s.Destino(), s.Ruta().Costo(), s.Ruta().Tiempo()));
-                        //}
                     } else {
                         break;
                     }
@@ -872,46 +867,11 @@ public class Matriz {
                 //Una vez agregados los nodos agrega la cabecera del árbol
                 //Verifica que el nodo no haya sido agregado ya
                 if (sb.indexOf(String.format("NM%d", temp.ruta.Origen())) == -1) {
-                    sb.append(String.format("NM%d[label=\"%s\"];\n", temp.ruta.Origen(), nombreDestino(temp.ruta.Origen())));
+                    sb.append(String.format("NM%d[label=\"%d\\n%s\"];\n", temp.ruta.Origen(), temp.ruta.Origen(), nombreDestino(temp.ruta.Origen())));
                 }
             }
             if (temp.siguiente == null) {
                 sb.append(generarGrafo(temp.derecha));
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     *
-     * @param origen
-     * @return
-     */
-    private String generarGrafo(NodoB origen, int idOrigen) {
-        if (origen == null || origen.ruta == null) {
-            return "";
-            //return String.format("NM%d[label=\"%s\"];\n", origen.ruta.Origen(), nombreDestino(origen.ruta.Origen()));
-        }
-        //Aquí se concatenará todo el texto
-        StringBuilder sb = new StringBuilder();
-        //Recupera la posición a la cual se llegará con el siguiente recorrido
-        int pos_o = posOrigen(idOrigen);
-        int pos_d;
-        for (NodoM s : origen.ruta) {
-            pos_d = posDestino(s.Destino());
-            if (pos_o >= pos_d) {
-                //Evita declaración de nodos duplicados
-                if (sb.indexOf(String.format("NM%d", idOrigen)) == -1) {
-                    sb.append(String.format("NM%d[label=\"%s\"];\n", idOrigen, nombreDestino(s.Origen())));
-                }
-                //Evita que la conexión del nodo s con un nodo siguiente que esté fuera de los parametros
-                if (pos_o < pos_d && s.siguiente != null) { //s != origen) {
-                    sb.append(String.format("NM%d -- NM%d[label=\"Q.%.2f\\n%.2f min\"];\n", idOrigen, s.siguiente.Destino(), s.Ruta().Costo(), s.Ruta().Tiempo()));
-                } else if (s.siguiente != null) {
-
-                }
-            } else {
-                break;
             }
         }
         return sb.toString();
