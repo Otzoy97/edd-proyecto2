@@ -199,6 +199,14 @@ public class Lista<T> implements Iterable<T> {
     }
     
     /**
+     * 
+     * @return tamaño de la lista
+     */
+    public int Largo(){
+        return largo;
+    }
+    
+    /**
      *
      * @return iterador para la clase lista
      */

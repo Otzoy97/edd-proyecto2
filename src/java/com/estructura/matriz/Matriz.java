@@ -974,4 +974,30 @@ public class Matriz {
         idDestino.buscarPos(idDestino.raiz, clave);
         return Matriz.cont;
     }
+    
+    /**
+     * 
+     * @return linealiza los encabezados de la matriz
+     */
+    public String[] linealizar(){
+        if(this.idOrigen.esVacio()) return null;
+        linealizacion = new String[this.idOrigen.tamanio];
+        linealizar(this.idOrigen.raiz);
+        return linealizacion;
+    }
+    
+    private static String[] linealizacion;
+    
+    private void linealizar (Rama raiz){
+        if(raiz == null) return;
+        StringBuilder sb = new StringBuilder();
+        sb.append(";");
+        for(NodoB n : raiz){
+            linealizar(n.izquierda);
+            linealizacion[posOrigen(n.Dato().Codigo())] = String.format("%d,%s",n.Dato().Codigo(),n.Dato().Nombre());
+            if(n.siguiente == null)
+                linealizar(n.derecha);
+        }   
+    }
+    
 }

@@ -10,6 +10,7 @@ import com.estructura.lista.Lista;
 import com.viaje.Archivo;
 import com.viaje.Reservacion;
 import static com.ws.DestinoWS.m;
+import java.util.Iterator;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -80,8 +81,25 @@ public class ReservacionWS {
      * @return
      */
     @WebMethod(operationName = "reservacionConLlave")
-    public Reservacion reservacionConLlave(@WebParam(name = "llave") int llave) {
-        return th.reservacion(llave);
+    public String[] reservacionConLlave(@WebParam(name = "llave") int llave) {
+        Reservacion rev = th.reservacion(llave);
+        //No se encontró nada
+        if (rev == null) {
+            return null;
+        }
+        //Crea y llena un arreglo para enviar los datos
+        String[] r = new String[4];
+        r[0] = rev.Cliente();
+        r[1] = String.format(".2f", rev.Costo());
+        r[2] = String.format(".2f", rev.Tiempo());
+        //Concatene el nombre de los paises que están el
+        StringBuilder sb = new StringBuilder();
+        Iterator<String> it = rev.Viaje().iterator();
+        while (it.hasNext()) {
+            sb.append(String.format("%s%s", it.next(), it.hasNext() ? ">>" : ""));
+        }
+        r[3] = sb.toString();
+        return r;
     }
 
     /**
@@ -92,8 +110,30 @@ public class ReservacionWS {
      * @return
      */
     @WebMethod(operationName = "reservacionesDelCliente")
-    public Reservacion[] reservacionesDelCliente(@WebParam(name = "nombre") String nombre) {
-        return th.reservacionPorCliente(nombre);
+    public String[][] reservacionesDelCliente(@WebParam(name = "nombre") String nombre) {
+        Reservacion[] rev = th.reservacionPorCliente(nombre);
+        if (rev == null) {
+            return null;
+        }
+        String[] t;
+        StringBuilder sb;
+        String[][] r = new String[rev.length][4];
+        int c = 0;
+        for (Reservacion rev1 : rev) {
+            t = new String[4];
+            t[0] = rev1.Cliente();
+            t[1] = String.format(".2f", rev1.Costo());
+            t[2] = String.format(".2f", rev1.Tiempo());
+            //Concatene el nombre de los paises que están en la reservación
+            sb = new StringBuilder();
+            Iterator<String> it = rev1.Viaje().iterator();
+            while (it.hasNext()) {
+                sb.append(String.format("%s%s", it.next(), it.hasNext() ? ">>" : ""));
+            }
+            t[3] = sb.toString();
+            r[c++] = t;
+        }
+        return r;
     }
 
     /**
